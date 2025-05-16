@@ -1,0 +1,146 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="550"
+		Width="900" Height="550"
+        x:Class="covidProject.MainWindow"
+		WindowStartupLocation="CenterScreen"
+		x:CompileBindings="False"
+		xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        Title="covidProject">
+	<Grid ShowGridLines="False">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		
+		<TextBlock Text="DO NOTHING" HorizontalAlignment="Center" Padding="5" FontSize="16" FontWeight="Bold"
+				   Name="TitlePageText"/>
+
+		<!--Первый столбец-->
+		<Grid ShowGridLines="False" Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="0.6*"/>
+			</Grid.ColumnDefinitions>
+
+			<!--Разделение на строки-->
+			<Grid ShowGridLines="False" Grid.Column="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="1.2*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+
+				<!--Тут будет график-->
+				<lvc:CartesianChart Width="500" Height="270" Background="White" Grid.Row="0"
+									HorizontalAlignment="Left" Margin="10 0 0 0"
+									Series="{Binding Series}" Foreground="White" LegendPosition="Left"
+									LegendTextPaint="{Binding LegendTextPaint}"
+									BorderBrush="Black" BorderThickness="1">
+				</lvc:CartesianChart>
+
+				<!--Заполнение полей для старта программы-->
+				<Grid ShowGridLines="False" Grid.Row="1">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1.7*"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+
+					<!--Поля для заполнения-->
+					<StackPanel Orientation="Vertical" Grid.Column="0">
+						<StackPanel Orientation="Horizontal" Margin="10">
+							<TextBlock Text="Infection radius: " VerticalAlignment="Center" FontSize="15"/>
+							<TextBox Watermark="5" Width="100"
+									 Name="InfectionRadiusInput"/>
+						</StackPanel>
+
+						<StackPanel Orientation="Horizontal" Margin="10 0 0 0">
+							<TextBlock Text="Population size: " VerticalAlignment="Center" FontSize="15"/>
+							<TextBox Watermark="100" Width="100"
+									 Name="PopulationSizeInput"/>
+						</StackPanel>
+
+						<StackPanel Orientation="Horizontal" Margin="10 10 0 0">
+							<TextBlock Text="Infection chance, %: " VerticalAlignment="Center" FontSize="15"/>
+							<ComboBox Width="100" SelectionChanged="SelectInfectChance_SelectionChanged"
+									  Name="InfectChance_ComboBox">
+								<ComboBoxItem Content="10"/>
+								<ComboBoxItem Content="20"/>
+								<ComboBoxItem Content="30"/>
+								<ComboBoxItem Content="40"/>
+								<ComboBoxItem Content="50"/>
+							</ComboBox>
+						</StackPanel>
+
+						<CheckBox Content="Add Quarantine Zone" Margin="10 0 0 0" Name="QuarantineCheckBox"
+								  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+
+						<StackPanel Orientation="Horizontal" Spacing="10" Margin="10 10 0 0">
+							<Button Content="Начать" Name="StartButton" Click="StartInfection_ButtonClick"
+									BorderBrush="Black" Width="100" HorizontalContentAlignment="Center"/>
+							<Button Content="Стоп" Name="StopButton" Width="100"
+									BorderBrush="Black" HorizontalContentAlignment="Center"
+									Click="Stop_ButtonClick"/>
+						</StackPanel>
+					</StackPanel>
+
+					<!--Карантинная зона-->
+					<StackPanel Grid.Column="1" VerticalAlignment="Center" Name="QuarantineZoneStackPanel" IsVisible="False">
+						<TextBlock Text="Quarantine Zone" HorizontalAlignment="Center" Foreground="Red" FontWeight="Bold"/>
+
+						<Border BorderBrush="Black" BorderThickness="1" Background="Azure"
+								Width="150" Height="150">
+							<Canvas Name="Quarantine" Width="140" Height="140"/>
+						</Border>
+					</StackPanel>
+				</Grid>
+			</Grid>
+
+			<!--Столбец для отображения поля с людьми-->
+			<StackPanel Grid.Column="1" Margin="10 0 0 0">
+
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Days: " FontSize="20" FontWeight="Bold"/>
+					<TextBlock Text="{Binding DaysCount}" FontSize="20" FontWeight="Bold"/>
+				</StackPanel>
+				<!--а тут уже канвас-->
+				<Border Width="270" Height="270" BorderBrush="Black" BorderThickness="1" Margin="0 0 0 0"
+						Name="Container"
+						HorizontalAlignment="Left">
+					<Canvas Name="Field" Background="Azure" Width="260" Height="260">
+						
+					</Canvas>
+				</Border>
+
+				<!--тут будут текстблоки-->
+				<StackPanel Orientation="Horizontal" Margin="0 20 0 0">
+					<TextBlock Text="Susceptible: " Foreground="Blue" FontSize="18"/>
+					<TextBlock Name="SusceptibleCount" Text="{Binding Susceptible}" Foreground="Blue" FontSize="18"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Infected: " Foreground="Red" FontSize="18"/>
+					<TextBlock Name="InfectedCount" Foreground="Red"  Text="{Binding Infected}" FontSize="18"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Removed: " Foreground="DarkGray" FontSize="18"/>
+					<TextBlock Name="RemovedCount" Foreground="DarkGray"  Text="{Binding Removed}" FontSize="18"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Dead: " Foreground="DarkViolet" FontSize="18"/>
+					<TextBlock Name="DeadCount" Foreground="DarkViolet"  Text="{Binding Dead}" FontSize="18"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Never isolated: " Foreground="Yellow" FontSize="18"/>
+					<TextBlock Name="NeverIsolatedCount" Foreground="Yellow"  
+							   Text="{Binding NeverIsolated}" FontSize="18"/>
+				</StackPanel>
+
+			</StackPanel>
+		</Grid>
+	</Grid>
+</Window>
